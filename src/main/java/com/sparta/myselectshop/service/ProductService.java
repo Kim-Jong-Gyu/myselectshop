@@ -4,13 +4,14 @@ import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
 import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.entity.Product;
+import com.sparta.myselectshop.entity.User;
 import com.sparta.myselectshop.naver.dto.ItemDto;
 import com.sparta.myselectshop.repository.ProductRepository;
+import com.sparta.myselectshop.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,8 +21,8 @@ public class ProductService {
 
     public static final int MIN_MY_PRICE = 100;
 
-    public ProductResponseDto createProduct(ProductRequestDto requestDto) {
-        Product product = productRepository.save(new Product(requestDto));
+    public ProductResponseDto createProduct(ProductRequestDto requestDto, User user) {
+        Product product = productRepository.save(new Product(requestDto, user));
         return new ProductResponseDto(product);
     }
 
@@ -38,8 +39,8 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-    public List<ProductResponseDto> getProducts() {
-        return productRepository.findAll().stream().map(ProductResponseDto::new).toList();
+    public List<ProductResponseDto> getProducts(User user) {
+        return productRepository.findAllByUser(user).stream().map(ProductResponseDto::new).toList();
 //        List<ProductResponseDto> productResponseDtoList = new ArrayList<>();
 //        for (Product product : productList) {
 //            productResponseDtoList.add(new ProductResponseDto(product));
@@ -53,5 +54,9 @@ public class ProductService {
                 new NullPointerException("해당 상품은 존재하지 않습니다.")
         );
         product.updateByItemDto(itemDto);
+    }
+
+    public List<ProductResponseDto> getAllProducts() {
+        return productRepository.findAll().stream().map(ProductResponseDto::new).toList();
     }
 }
