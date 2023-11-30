@@ -29,17 +29,4 @@ public class FolderController {
     public List<FolderResponseDto> getFolders(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return folderService.getFolders(userDetails.getUser());
     }
-
-    // Controller에서 예외가 발생하면 호출이 되고 해당 예외를 처리를 해준다.
-    // AOP 기반으로 작동해서 일일이 적용 시킬 필요 없다.
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<RestApiException> handleException(IllegalArgumentException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(
-                // HTTP body
-                restApiException,
-                // HTTP status code
-                HttpStatus.BAD_REQUEST
-        );
-    }
 }
